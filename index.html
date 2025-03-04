@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Secret Letter</title>
+
+    <style>
+
+        body {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            height: 100vh;
+
+            margin: 0;
+
+            flex-direction: column;
+
+            font-family: 'Georgia', serif;
+
+            overflow: hidden;
+
+            position: relative;
+
+            background: linear-gradient(-45deg, #001F3F, #002855, #003366, #002855);
+
+            background-size: 400% 400%;
+
+            animation: dayNightCycle 20s infinite alternate ease-in-out;
+
+        }
+
+
+
+        /* Day-Night Cycle Animation */
+
+        @keyframes dayNightCycle {
+
+            0% { background: #001F3F; } /* Night */
+
+            50% { background: #87CEFA; } /* Day (Light Blue) */
+
+            100% { background: #001F3F; } /* Night */
+
+        }
+
+
+
+        /* Sun */
+
+        .sun {
+
+            position: absolute;
+
+            top: 10%;
+
+            left: 10%;
+
+            width: 80px;
+
+            height: 80px;
+
+            background: yellow;
+
+            border-radius: 50%;
+
+            opacity: 0;
+
+            animation: sunCycle 20s infinite alternate ease-in-out;
+
+        }
+
+
+
+        @keyframes sunCycle {
+
+            0% { opacity: 0; transform: translateY(50px); } /* Hidden at night */
+
+            50% { opacity: 1; transform: translateY(0); } /* Visible in the day */
+
+            100% { opacity: 0; transform: translateY(50px); } /* Fades out at night */
+
+        }
+
+
+
+        /* Stars */
+
+        .stars {
+
+            position: absolute;
+
+            width: 100%;
+
+            height: 100%;
+
+            overflow: hidden;
+
+            z-index: -1;
+
+        }
+
+
+
+        .star {
+
+            position: absolute;
+
+            width: 3px;
+
+            height: 3px;
+
+            background: white;
+
+            border-radius: 50%;
+
+            opacity: 0;
+
+            animation: twinkle 3s infinite ease-in-out alternate, starFade 20s infinite alternate ease-in-out;
+
+        }
+
+
+
+        @keyframes twinkle {
+
+            0% { opacity: 0; transform: scale(0.5); }
+
+            50% { opacity: 1; transform: scale(1.2); }
+
+            100% { opacity: 0; transform: scale(0.8); }
+
+        }
+
+
+
+        @keyframes starFade {
+
+            0% { opacity: 1; } /* Visible at night */
+
+            50% { opacity: 0; } /* Disappears during the day */
+
+            100% { opacity: 1; } /* Reappears at night */
+
+        }
+
+
+
+        .container {
+
+            position: relative;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+        }
+
+
+
+        /* Clickable heart container */
+
+        .heart-container {
+
+            position: absolute;
+
+            width: 100px;
+
+            height: 90px;
+
+            cursor: pointer;
+
+            z-index: 2;
+
+            transition: transform 1s ease-in-out;
+
+            top: -50px;
+
+        }
+
+
+
+        .heart {
+
+            width: 100px;
+
+            height: 90px;
+
+            position: relative;
+
+            transition: background 1.5s ease-in-out;
+
+        }
+
+
+
+        .heart::before,
+
+        .heart::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 50px;
+
+            height: 80px;
+
+            background: #ADD8E6;
+
+            border-radius: 50px 50px 0 0;
+
+            top: 0;
+
+            transition: background 1.5s ease-in-out;
+
+        }
+
+
+
+        .heart::before {
+
+            left: 50px;
+
+            transform: rotate(-45deg);
+
+            transform-origin: 0 100%;
+
+        }
+
+
+
+        .heart::after {
+
+            left: 0;
+
+            transform: rotate(45deg);
+
+            transform-origin: 100% 100%;
+
+        }
+
+
+
+        /* Heart turns deeper blue on hover */
+
+        .heart-container:hover .heart::before,
+
+        .heart-container:hover .heart::after {
+
+            background: #4682B4;
+
+        }
+
+
+
+        /* Letter box */
+
+        .letter-box {
+
+            position: absolute;
+
+            top: -220px;
+
+            width: 600px;
+
+            height: 250px;
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            text-align: center;
+
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+
+            opacity: 0;
+
+            transform: translateY(-20px);
+
+            transition: opacity 1.5s ease-in-out, transform 1s ease-in-out;
+
+            overflow-y: auto;
+
+            pointer-events: none;
+
+        }
+
+
+
+        /* When letter is shown */
+
+        .letter-box.active {
+
+            opacity: 1;
+
+            transform: translateY(100px);
+
+            pointer-events: auto;
+
+        }
+
+
+
+        /* Fade-in text */
+
+        .poem, .signature {
+
+            opacity: 0;
+
+            transition: opacity 1.5s ease-in-out;
+
+        }
+
+
+
+        .letter-box.active .poem, .letter-box.active .signature {
+
+            opacity: 1;
+
+        }
+
+
+
+        /* Move the heart slightly higher */
+
+        .heart-container.move-top-right {
+
+            transform: translate(180px, -120px);
+
+        }
+
+
+
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <!-- Sun -->
+
+    <div class="sun"></div>
+
+
+
+    <!-- Twinkling Stars Background -->
+
+    <div class="stars"></div>
+
+
+
+    <div class="container">
+
+        <div class="heart-container" onclick="toggleLetter()">
+
+            <div class="heart"></div>
+
+        </div>
+
+        <div class="letter-box" id="letter">
+
+            <p class="poem">
+
+                "Your name lingers in my mind like a beautiful melody, one I never want to stop hearing.  
+
+                There’s something about you—something effortless, something that pulls me in without a single word.  
+
+                
+
+                I catch myself watching the way you smile, how your eyes hold a quiet kind of magic.  
+
+                You move through the world unaware of just how much light you bring to it.  
+
+                
+
+                I wonder if you’ve ever noticed—the way hearts skip a beat when you’re near,  
+
+                the way time slows, if only for a moment, whenever you laugh.  
+
+                
+
+                You don’t know me, not yet.  
+
+                But I know that you are someone rare, someone unforgettable.  
+
+                And for now, I’ll admire you from afar, until the day you find this letter  
+
+                and maybe, just maybe, see me too."
+
+            </p>
+
+            <p class="signature">Yours in the shadows,<br> Your Secret Admirer</p>
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        function toggleLetter() {
+
+            let letter = document.getElementById("letter");
+
+            let heartContainer = document.querySelector(".heart-container");
+
+
+
+            letter.classList.toggle("active");
+
+            heartContainer.classList.toggle("move-top-right");
+
+        }
+
+
+
+        // Generate twinkling stars
+
+        function createStars() {
+
+            const starContainer = document.querySelector('.stars');
+
+
+
+            for (let i = 0; i < 50; i++) {
+
+                let star = document.createElement('div');
+
+                star.classList.add('star');
+
+
+
+                let posX = Math.random() * 100;
+
+                let posY = Math.random() * 100;
+
+                let delay = Math.random() * 5;
+
+                let duration = Math.random() * 3 + 2;
+
+
+
+                star.style.left = `${posX}%`;
+
+                star.style.top = `${posY}%`;
+
+                star.style.animationDelay = `-${delay}s`;
+
+                star.style.animationDuration = `${duration}s`;
+
+
+
+                starContainer.appendChild(star);
+
+            }
+
+        }
+
+
+
+        createStars();
+
+    </script>
+
+
+
+</body>
+
+</html>
